@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "folder-replicator"
+version = "0.1.0"
+description = ""
+authors = ["Pedro Baptista <32106544+pmpbaptista@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
