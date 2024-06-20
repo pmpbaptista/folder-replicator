@@ -5,21 +5,32 @@ description = ""
 authors = ["Pedro Baptista <32106544+pmpbaptista@users.noreply.github.com>"]
 readme = "README.md"
 
+
 packages = [
     { include = "folder_replicator", from = "." }
 ]
 
+
 [tool.poetry.scripts]
 folder-replicator = "folder_replicator.__main__:main"
 
+
 [tool.poetry.dependencies]
 python = "^3.8.0"
+
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=7.4.4,<9.0.0"
 tox = "^4.12.0"
 pytest-cov = ">=4.1,<6.0"
 ruff = ">=0.1.13,<0.5.0"
+
+
+[tool.poetry.group.docs.dependencies]
+mkdocs = "^1.6.0"
+mkdocs-material = "^9.5.27"
+mkdocstrings = {extras = ["python"], version = "^0.25.1"}
+
 
 [build-system]
 requires = ["poetry-core"]
@@ -44,35 +55,42 @@ exclude = '''
 )/
 '''
 
+
 # Configurations for pytest
 [tool.pytest]
-addopts = ["-ra", "--cov=folder_replicator", "--cov-report=term-missing", "--cov-report=html", "--cov-fail-under=80"]
-testpaths = ["tests"]
+addopts = ["-ra", "--cov=folder_replicator", "--cov-report=term-missing", "--cov-report=html", "--cov-fail-under=80", "--doctest-modules"]
+testpaths = ["tests", "folder_replicator"]
 
 select = ["ALL"]
 target-version = "py310"
 # Same as Black.
 line-length = 100
 
+
 [tool.coverage.report]
 exclude_lines = [
     'if __name__ == "__main__":'
 ]
 
+
 [lint.per-file-ignores]
 "tests/**/*.py" = ["S101"] # Use of assert detected.
+
 
 [lint.mccabe]
 # Implicit 10 is too low for our codebase, even black uses 18 as default.
 max-complexity = 20
 
+
 [lint.flake8-builtins]
 builtins-ignorelist = ["id"]
+
 
 [lint.ignore]
 ignore = [
   "D211", # No blank lines allowed after function docstring
 ]
+
 
 # Configurations for tox
 [tool.tox]
