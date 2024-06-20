@@ -1,0 +1,19 @@
+site_name: Folder Replicator
+
+theme:
+  name: "material"
+
+nav:
+  []
+
+plugins:
+- search:
+- mkdocstrings:
+    handlers:
+      python:
+        paths: [folder_replicator]
+
+# to navigate with `/site` content correctly
+use_directory_urls: false
+
+repo_url: https://github.com/pmpbaptista/folder-replicator
