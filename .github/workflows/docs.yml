@@ -33,4 +33,4 @@
           - name: Build docs
             run: |
               set -o pipefail
-              poetry run mkdocs gh-deploy -m "docs: update documentation" -v --force
+              poetry run mkdocs gh-deploy -m "docs: update documentation" -v --force --github-token "${GH_TOKEN}"
