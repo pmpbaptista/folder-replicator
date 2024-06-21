@@ -1,8 +1,12 @@
 """ Main module for the folder-replicator package. """
 
+from folder_replicator.lib import logger as fr_logger
 from folder_replicator.SyncContext import SyncContext
 from folder_replicator.SyncStrategyLocal import SyncStrategyLocal
 
+
+# Get the logger
+logger = fr_logger.get_logger()
 
 def main():
     """
@@ -14,6 +18,8 @@ def main():
     """
 
     print("Hello, world!")
+
+    logger.info("Hello, world!")
 
     # The client code picks a concrete strategy and passes it to the context.
     # The client should be aware of the differences between strategies in order
