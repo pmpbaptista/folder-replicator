@@ -5,14 +5,17 @@ import sys
 
 DEFAULT_LOG_FILE = "folder_replicator.log"
 
-def get_logger(name: str=__name__, verbose: bool=False, log_file: str=None) -> logging.Logger:
+
+def get_logger(name: str = __name__, verbose: bool = False, log_file: str = None) -> logging.Logger:
     """
     Set up a logger instance and return it.
-    args:
+
+    Args:
         name: str - name of the logger
         verbose: bool - whether to log debug messages
         log_file: str - path to the log file
-    returns:
+
+    Returns:
         logger: logging.Logger - the logger instance
     """
     if "FR_VERBOSE" in os.environ:
