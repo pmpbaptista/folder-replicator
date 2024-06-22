@@ -17,6 +17,7 @@ folder-replicator = "folder_replicator.__main__:main"
 
 [tool.poetry.dependencies]
 python = "^3.8.0"
+croniter = "^2.0.5"
 
 
 [tool.poetry.group.dev.dependencies]

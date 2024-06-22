@@ -1,10 +1,12 @@
 """ Main module for the folder-replicator package. """
 
 import argparse
+from time import sleep
 
+from folder_replicator.SyncStrategyFactory import SyncStrategyFactory
 from folder_replicator.lib import logger as fr_logger
 from folder_replicator.SyncContext import SyncContext
-from folder_replicator.SyncStrategyLocal import SyncStrategyLocal
+from folder_replicator.lib.sync_scheduler import get_seconds_until_next_sync
 
 
 def _parse_args():
@@ -23,7 +25,9 @@ def _parse_args():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
-    parser.add_argument("--type", "-t", help="The type of sync to perform", choices=["local"])
+    parser.add_argument(
+        "--type", "-t", help="The type of sync to perform", choices=["local"], default="local"
+    )
 
     parser.add_argument("--source", "-s", help="The source folder to sync from", required=True)
 
@@ -66,7 +70,26 @@ def _print_hello():
     print("Hello, world!")
 
 
-def main():
+def sync(args: argparse.Namespace, sync_context: SyncContext) -> None:
+    """
+    Sync files between folders.
+
+    Args:
+        args: argparse.Namespace - the parsed arguments
+        sync_context: SyncContext - the sync context to use
+
+    Returns:
+        None
+    """
+
+    print(f"Next sync in {get_seconds_until_next_sync(args.schedule)} seconds")
+
+    sync_context.do_some_file_logic()
+
+    sync_context.strategy.sync(args.source, args.destination)
+
+
+def main() -> None:
     """
     Main function for the folder-replicator package.
 
@@ -81,18 +104,22 @@ def main():
 
     args = _parse_args()
     logger = fr_logger.get_logger(verbose=args.verbose, log_file=args.log_file)
-    logger.info("Hello, world!")
+    logger.info("Starting folder-replicator")
+
+    sync_strategy = SyncStrategyFactory.create_strategy(args.type)
+
     # The client code picks a concrete strategy and passes it to the context.
     # The client should be aware of the differences between strategies in order
     # to make the right choice.
+    sync_context = SyncContext(sync_strategy)
 
-    sync_context = SyncContext(SyncStrategyLocal())
-
-    # The client code should be able to work with any strategy via the
-    # SyncStrategy interface.
-    sync_context.do_some_file_logic()
-
-    sync_context.strategy.sync("my_source", "my_destination")
+    while True:
+        # The client code should be able to work with any strategy via the
+        # SyncStrategy interface.
+        sync(args, sync_context)
+        next_sync = get_seconds_until_next_sync(args.schedule)
+        logger.info(f"Next sync in {next_sync} seconds")
+        sleep(next_sync)
 
 
 if __name__ == "__main__":
