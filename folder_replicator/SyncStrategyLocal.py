@@ -112,7 +112,6 @@ class SyncStrategyLocal(SyncStrategy):
             source_path = path
             try:
                 relative_path = source_path.relative_to(self.source.path.resolve())
-                print(relative_path)
             except ValueError:
                 logger.error(
                     f"File {source_path} is not relative to the source directory {self.source.path}"
