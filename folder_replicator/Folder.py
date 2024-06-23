@@ -60,7 +60,7 @@ class Folder:
             bool: whether the two Folder objects are equal
         """
         return self.hash == other.hash
-    
+
     def __calculate_folder_hash(self) -> str:
         """
         Calculate the hash of a folder.
@@ -109,9 +109,17 @@ class Folder:
             dict: a dictionary of files in the folder with the relative path as the key and the checksum as the value
         """
         if self.recursive:
-            files = {file: self.__calculate_file_hash(file.resolve()) for file in self.path.rglob("*") if file.is_file()}
+            files = {
+                file: self.__calculate_file_hash(file.resolve())
+                for file in self.path.rglob("*")
+                if file.is_file()
+            }
         else:
-            files = {file: self.__calculate_file_hash(file.resolve()) for file in self.path.glob("*") if file.is_file()}
+            files = {
+                file: self.__calculate_file_hash(file.resolve())
+                for file in self.path.glob("*")
+                if file.is_file()
+            }
 
         # Sort the files by hash to ensure a consistent order
         files = {k: v for k, v in sorted(files.items(), key=lambda item: item[1])}
