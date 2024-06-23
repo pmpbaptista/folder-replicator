@@ -19,7 +19,7 @@ poetry run folder-replicator --help
 ## Docker Usage
 Edit the `docker-compose.yml` file to set the source and destination folders.
 ```bash
-docker compose up build
+docker compose up --build
 ```
 
 ## Development

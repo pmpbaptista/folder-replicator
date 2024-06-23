@@ -6,13 +6,13 @@ WORKDIR /app
 # Copy the current directory contents into the container at /app
 COPY . /app
 
-# Install any needed packages specified in requirements.txt
+# Install poetry
 RUN pip install poetry==1.8.3
 
-# Install dependencies
+# Install dependencies using poetry
 RUN poetry install
 
-# Build the application
+# Build the application using poetry
 RUN poetry build
 
 # Create a new stage for the runtime image
