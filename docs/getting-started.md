@@ -1,6 +1,7 @@
 # Getting Started
 
-This is a guide to help you get started with the project. It will walk you through the steps to get the project up and running on your local machine.
+This is a guide to help you get started with the project. It will walk you through the steps to get the project
+up and running on your local machine.
 
 ## Prerequisites
 
@@ -28,7 +29,8 @@ poetry run folder-replicator --help
 
 ### Configuration
 
-The execution of the project can be configured using command-line arguments. You can see the available options by running the following command:
+The execution of the project can be configured using command-line arguments. You can see the available options by
+running the following command:
 
 ```sh
 poetry run folder-replicator --help
@@ -56,5 +58,30 @@ FR_VERBOSE=true
 To run the project, follow these steps:
 
 1. Step 1
+
+Edit the `docker-compose.yml` file to set the source and destination folders.
+
+```yml
+# docker-compose.yml
+version: '3.8'
+
+services:
+  folder-replicator:
+    image: folder-replicator:latest
+    volumes:
+      - /path/to/source:/source
+      - /path/to/destination:/destination
+```
+
 2. Step 2
+
+In the same file you can also edit the schedule and other options.
+Check the [Configuration](#configuration) section for more information.
+
 3. Step 3
+
+Run the following command to start the container:
+
+```sh
+docker compose up build --detach
+```
