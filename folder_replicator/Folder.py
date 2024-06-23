@@ -72,7 +72,8 @@ class Folder:
             str: the hash of the folder
         """
         hasher = hashlib.md5()
-        for _, hash in self.files.items():
+        for file, hash in self.files.items():
+            hasher.update(file.name.encode())
             hasher.update(hash.__str__().encode())
             hasher.update(hash.encode())
         return hasher.hexdigest()
