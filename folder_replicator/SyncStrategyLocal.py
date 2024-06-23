@@ -34,10 +34,10 @@ class SyncStrategyLocal(SyncStrategy):
         self.source.refresh()
         self.destination.refresh()
         if self.source.hash == self.destination.hash:
-            logger.info("Folders are already in sync")
+            logger.info(
+                f"Folders {self.source.path}:{self.source.hash} and {self.destination.path}:{self.source.hash} are in sync"
+            )
             return
-
-        logger.info("Syncing folders")
 
         # Get files in source and destination
         source_files = self.source.files
@@ -48,8 +48,11 @@ class SyncStrategyLocal(SyncStrategy):
         for path, hash in source_files.items():
             if hash not in destination_files.values():
                 files_to_copy[path.resolve()] = hash
-
-        logger.info(f"Files to copy: {files_to_copy}")
+        
+        if logger.isEnabledFor(fr_logger.logging.DEBUG):
+            logger.debug(f"Source files: {source_files}")
+            logger.debug(f"Destination files: {destination_files}")
+            logger.debug(f"Files to copy: {files_to_copy}")
 
         if self.source.delete:
             # Get files that are in destination but not in source
@@ -57,8 +60,10 @@ class SyncStrategyLocal(SyncStrategy):
             for path, hash in destination_files.items():
                 if hash not in source_files.values():
                     files_to_delete[path.resolve()] = hash
-            logger.info(f"Files to delete: {files_to_delete}")
 
+            if logger.isEnabledFor(fr_logger.logging.DEBUG):
+                logger.debug(f"Files to delete: {files_to_delete}")
+            
             temp_files = []
             # Delete files from destination that are not in source
             for file in files_to_delete:
@@ -146,6 +151,8 @@ class SyncStrategyLocal(SyncStrategy):
             None
         """
         logger = fr_logger.get_logger()
+        if logger.isEnabledFor(fr_logger.logging.DEBUG):
+            logger.debug(f"Temp files: {temp_files}")
         logger.info("Cleaning up temp files")
 
         for file in temp_files:

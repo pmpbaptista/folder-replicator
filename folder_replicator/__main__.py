@@ -106,6 +106,9 @@ def main() -> None:
     args = _parse_args()
     logger = fr_logger.get_logger(verbose=args.verbose, log_file=args.log_file)
     logger.info("Starting folder-replicator")
+    logger.info(f"Syncing from {args.source} to {args.destination}")
+    logger.info(f"Syncing every {args.schedule}")
+    logger.info(f"Syncing options: recursive={args.recursive}, delete={args.delete}, dry_run={args.dry_run}")
 
     sync_strategy = SyncStrategyFactory.create_strategy(
         args.type, args.source, args.destination, args.recursive, args.delete, args.dry_run
@@ -128,16 +131,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-def _print_hello() -> None:
-    """
-    Print "Hello, world!" to the console.
-
-    Args:
-        None
-
-    Returns:
-        None
-    """
-
-    print("Hello, world!")

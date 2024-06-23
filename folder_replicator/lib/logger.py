@@ -22,11 +22,11 @@ def get_logger(name: str = __name__, verbose: bool = False, log_file: str = None
         verbose = True
 
     logger = logging.getLogger(name)
-    logger.setLevel(logging.DEBUG if verbose else logging.INFO)
 
     # logger itself is ensured to be a singleton
     # but handlers should only be added once
     if len(logger.handlers) == 0:
+        logger.setLevel(logging.DEBUG if verbose else logging.INFO)
         console_handler = logging.StreamHandler(sys.stderr)
         formatter = logging.Formatter(
             "%(asctime)s [%(levelname)s] %(message)s", datefmt="%Y-%m-%d %H:%M:%S %z"

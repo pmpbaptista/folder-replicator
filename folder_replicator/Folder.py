@@ -72,8 +72,8 @@ class Folder:
             str: the hash of the folder
         """
         hasher = hashlib.md5()
-        for path, hash in self.files.items():
-            hasher.update(path.__str__().encode())
+        for _, hash in self.files.items():
+            hasher.update(hash.__str__().encode())
             hasher.update(hash.encode())
         return hasher.hexdigest()
 
@@ -112,6 +112,9 @@ class Folder:
             files = {file: self.__calculate_file_hash(file.resolve()) for file in self.path.rglob("*") if file.is_file()}
         else:
             files = {file: self.__calculate_file_hash(file.resolve()) for file in self.path.glob("*") if file.is_file()}
+
+        # Sort the files by hash to ensure a consistent order
+        files = {k: v for k, v in sorted(files.items(), key=lambda item: item[1])}
         return files
 
     def refresh(self) -> None:

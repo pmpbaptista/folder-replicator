@@ -97,7 +97,7 @@ ignore = [
 [tool.tox]
 legacy_tox_ini = """
     [tox]
-    envlist = py{38,39,310,311,312}, lint, pre-commit
+    envlist = py{38,39,310,311,312}, lint
     skipsdist = True
     skip_missing_interpreters = True
 
@@ -106,7 +106,7 @@ legacy_tox_ini = """
         poetry
     commands =
         poetry install -v
-        poetry run pytest --cov=folder_replicator --cov-report=term-missing
+        poetry run pytest -ra --cov=folder_replicator --cov-report=term-missing --cov-report=html --cov-fail-under=40 --doctest-modules
 
     [testenv:lint]
     deps =
