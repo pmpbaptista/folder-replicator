@@ -83,5 +83,11 @@ Check the [Configuration](#configuration) section for more information.
 Run the following command to start the container:
 
 ```sh
-docker compose up build --detach
+docker compose up --build
+```
+
+Optionally, you can run the container in the background:
+
+```sh
+docker compose up --build --detach
 ```
