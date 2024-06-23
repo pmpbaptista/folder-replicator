@@ -78,10 +78,13 @@ class SyncStrategyLocal(SyncStrategy):
                     file.unlink()
                 except FileNotFoundError:
                     logger.error(f"File {file} not found in destination")
+                    continue
                 except PermissionError:
                     logger.error(f"Permission denied to delete file {file}")
+                    continue
                 except Exception as e:
                     logger.error(f"Error deleting file {file}: {e}")
+                    continue
 
         # Copy files from source to destination
         self.__copy(files_to_copy)
@@ -132,10 +135,13 @@ class SyncStrategyLocal(SyncStrategy):
                 shutil.copy2(source_path, destination_path)
             except FileNotFoundError:
                 logger.error(f"File {source_path} not found in source")
+                continue
             except PermissionError:
                 logger.error(f"Permission denied to copy file {source_path}")
+                continue
             except Exception as e:
                 logger.error(f"Error copying file {source_path}: {e}")
+                continue
 
         logger.info("Copy complete")
 
@@ -162,9 +168,12 @@ class SyncStrategyLocal(SyncStrategy):
                 file.unlink()
             except FileNotFoundError:
                 logger.error(f"File {file} not found")
+                continue
             except PermissionError:
                 logger.error(f"Permission denied to delete file {file}")
+                continue
             except Exception as e:
                 logger.error(f"Error deleting file {file}: {e}")
+                continue
 
         logger.info("Temp file cleanup complete")
