@@ -34,10 +34,10 @@ class SyncStrategyLocal(SyncStrategy):
         self.source.refresh()
         self.destination.refresh()
         if self.source.hash == self.destination.hash:
-            logger.info("Folders are already in sync")
+            logger.info(
+                f"Folders {self.source.path}:{self.source.hash} and {self.destination.path}:{self.source.hash} are in sync"
+            )
             return
-
-        logger.info("Syncing folders")
 
         # Get files in source and destination
         source_files = self.source.files
@@ -48,8 +48,11 @@ class SyncStrategyLocal(SyncStrategy):
         for path, hash in source_files.items():
             if hash not in destination_files.values():
                 files_to_copy[path.resolve()] = hash
-
-        logger.info(f"Files to copy: {files_to_copy}")
+        
+        if logger.isEnabledFor(fr_logger.logging.DEBUG):
+            logger.debug(f"Source files: {source_files}")
+            logger.debug(f"Destination files: {destination_files}")
+            logger.debug(f"Files to copy: {files_to_copy}")
 
         if self.source.delete:
             # Get files that are in destination but not in source
@@ -57,8 +60,10 @@ class SyncStrategyLocal(SyncStrategy):
             for path, hash in destination_files.items():
                 if hash not in source_files.values():
                     files_to_delete[path.resolve()] = hash
-            logger.info(f"Files to delete: {files_to_delete}")
 
+            if logger.isEnabledFor(fr_logger.logging.DEBUG):
+                logger.debug(f"Files to delete: {files_to_delete}")
+            
             temp_files = []
             # Delete files from destination that are not in source
             for file in files_to_delete:
@@ -73,10 +78,13 @@ class SyncStrategyLocal(SyncStrategy):
                     file.unlink()
                 except FileNotFoundError:
                     logger.error(f"File {file} not found in destination")
+                    continue
                 except PermissionError:
                     logger.error(f"Permission denied to delete file {file}")
+                    continue
                 except Exception as e:
                     logger.error(f"Error deleting file {file}: {e}")
+                    continue
 
         # Copy files from source to destination
         self.__copy(files_to_copy)
@@ -107,7 +115,6 @@ class SyncStrategyLocal(SyncStrategy):
             source_path = path
             try:
                 relative_path = source_path.relative_to(self.source.path.resolve())
-                print(relative_path)
             except ValueError:
                 logger.error(
                     f"File {source_path} is not relative to the source directory {self.source.path}"
@@ -128,10 +135,13 @@ class SyncStrategyLocal(SyncStrategy):
                 shutil.copy2(source_path, destination_path)
             except FileNotFoundError:
                 logger.error(f"File {source_path} not found in source")
+                continue
             except PermissionError:
                 logger.error(f"Permission denied to copy file {source_path}")
+                continue
             except Exception as e:
                 logger.error(f"Error copying file {source_path}: {e}")
+                continue
 
         logger.info("Copy complete")
 
@@ -146,6 +156,8 @@ class SyncStrategyLocal(SyncStrategy):
             None
         """
         logger = fr_logger.get_logger()
+        if logger.isEnabledFor(fr_logger.logging.DEBUG):
+            logger.debug(f"Temp files: {temp_files}")
         logger.info("Cleaning up temp files")
 
         for file in temp_files:
@@ -156,9 +168,12 @@ class SyncStrategyLocal(SyncStrategy):
                 file.unlink()
             except FileNotFoundError:
                 logger.error(f"File {file} not found")
+                continue
             except PermissionError:
                 logger.error(f"Permission denied to delete file {file}")
+                continue
             except Exception as e:
                 logger.error(f"Error deleting file {file}: {e}")
+                continue
 
         logger.info("Temp file cleanup complete")

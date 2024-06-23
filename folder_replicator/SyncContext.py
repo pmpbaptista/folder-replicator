@@ -34,14 +34,10 @@ class SyncContext:
 
         self._strategy = strategy
 
-    def do_some_file_logic(self) -> None:
+    def get_number_of_files(self) -> int:
         """
-        The SyncContext can implement some logic that is common to all strategies.
+        The SyncContext delegates some work to the Strategy object instead of
+        implementing multiple versions of the algorithm on its own.
         """
 
-        # ...
-
-        print("SyncContext: Sorting files before syncing")
-        files = ["file_x", "file_a", "file_b", "file_c"]
-        files.sort()
-        print(files)
+        return len(self._strategy.source.files)

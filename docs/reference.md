@@ -1,6 +1,8 @@
 # docs/reference.md
 
-...
+This is the reference documentation for the `folder_replicator` package.
+
+## Modules
 
 ::: folder_replicator.__main__
     options:

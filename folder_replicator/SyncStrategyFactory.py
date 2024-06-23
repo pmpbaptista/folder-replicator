@@ -1,5 +1,6 @@
 from folder_replicator.SyncStrategyLocal import SyncStrategyLocal
 from folder_replicator.interfaces.SyncStrategy import SyncStrategy
+from folder_replicator.lib import logger as fr_logger
 
 
 class SyncStrategyFactory:
@@ -24,7 +25,11 @@ class SyncStrategyFactory:
             SyncStrategy - the created strategy
         """
 
+        logger = fr_logger.get_logger()
+
         if strategy_type == "local":
+            logger.info("Creating local sync strategy")
             return SyncStrategyLocal(source, destination, recursive, delete, dry_run)
         else:
+            logger.error(f"Unknown strategy type: {strategy_type}")
             raise ValueError(f"Unknown strategy type: {strategy_type}")
