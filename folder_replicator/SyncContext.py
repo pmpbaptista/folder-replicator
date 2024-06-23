@@ -3,7 +3,7 @@ from __future__ import annotations
 from folder_replicator.interfaces.SyncStrategy import SyncStrategy
 
 
-class SyncContext():
+class SyncContext:
     """
     The SyncContext defines the interface of interest to clients.
     """
