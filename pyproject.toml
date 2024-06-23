@@ -90,6 +90,8 @@ exclude_also = [
     "def __init__",
     "except PermissionError",
     "except Exception",
+    "except FileNotFoundError",
+    "except OsError",
     ]
 
 [lint.per-file-ignores]

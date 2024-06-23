@@ -193,3 +193,29 @@ def test_sync_strategy_local_filenotfounderror(tmp_path):
     sync_strategy_local.source.path = tmp_path / "wrong"
     sync_strategy_local.sync()
     
+
+def test_sync_strategy_local_remove_empty_folders(tmp_path):
+    """
+    Test the SyncStrategyLocal class when removing empty folders.
+
+    Args:
+        tmp_path: Path - the temporary path to use for testing
+
+    Returns:
+        None
+    """
+    sync_strategy_local = setup_sync_strategy_local(tmp_path)
+    # Create a subfolder in the source folder
+    (sync_strategy_local.source.path / "test").mkdir()
+    # Create a file in the source folder
+    (sync_strategy_local.source.path / "test/file.txt").touch()
+    sync_strategy_local.source.refresh()
+    assert sync_strategy_local.source.hash != sync_strategy_local.destination.hash
+    sync_strategy_local.sync()
+    assert sync_strategy_local.source.hash == sync_strategy_local.destination.hash
+    # Remove the file in the source folder
+    (sync_strategy_local.source.path / "test/file.txt").unlink()
+    sync_strategy_local.sync()
+    sync_strategy_local.source.refresh()
+    assert not (sync_strategy_local.destination.path / "test").exists()
+    assert not (sync_strategy_local.destination.path / "test/file.txt").exists()

@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     image: folder-replicator:latest
     volumes:
-      - ./backup/source:/app/source # Edit source_path to the path of the source folder
-      - ./backup/dest:/app/destination # Edit destination_path to the path of the destination folder
+      - ./source_path:/app/source # Edit source_path to the path of the source folder
+      - ./destination_path:/app/destination # Edit destination_path to the path of the destination folder
     entrypoint: ["folder-replicator", "-s" ,"/app/source", "-d", "/app/destination", "-c", "* * * * *"] # Edit the cron schedule
     restart: unless-stopped

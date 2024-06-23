@@ -48,6 +48,15 @@ class SyncStrategyLocal(SyncStrategy):
         for path, hash in source_files.items():
             if hash not in destination_files.values():
                 files_to_copy[path.resolve()] = hash
+                continue
+            for file, file_hash in destination_files.items():
+                if hash == file_hash:
+                    if path.name != file.name:
+                        print(path.name, file.name)
+                        files_to_copy[path.resolve()] = hash
+                        continue
+                    if path.stat().st_mtime > file.stat().st_mtime:
+                        files_to_copy[path.resolve()] = hash
         
         if logger.isEnabledFor(fr_logger.logging.DEBUG):
             logger.debug(f"Source files: {source_files}")
@@ -60,6 +69,14 @@ class SyncStrategyLocal(SyncStrategy):
             for path, hash in destination_files.items():
                 if hash not in source_files.values():
                     files_to_delete[path.resolve()] = hash
+                    continue
+                for file, file_hash in source_files.items():
+                    if hash == file_hash:
+                        if path.name != file.name:
+                            files_to_delete[path.resolve()] = hash
+                            continue
+                        if path.stat().st_mtime > file.stat().st_mtime:
+                            files_to_delete[path.resolve()] = hash
 
             if logger.isEnabledFor(fr_logger.logging.DEBUG):
                 logger.debug(f"Files to delete: {files_to_delete}")
@@ -92,10 +109,38 @@ class SyncStrategyLocal(SyncStrategy):
         if self.source.delete:
             # Clean up temp files
             self.__clean_bak_files(temp_files)
+            self.__remove_empty_folders(self.destination.path)
 
         self.source.refresh()
         self.destination.refresh()
         logger.info("Sync complete")
+    
+    def __copy_file(self, src, dst, buffer_size=1024*1024):
+        """
+        Copy a file from source to destination using a buffer.
+
+        Args:
+            src: str - the source file path
+            dst: str - the destination file path
+            buffer_size: int - the buffer size to use
+
+        Returns:
+            None
+        """
+        copied_size = 0
+        logger = fr_logger.get_logger()
+
+        with open(src, 'rb') as file_src, open(dst, 'wb') as file_dst:
+            while True:
+                buf = file_src.read(buffer_size)
+                if not buf:
+                    break
+                file_dst.write(buf)
+                copied_size += len(buf)
+
+        shutil.copystat(src, dst)
+        if logger.isEnabledFor(fr_logger.logging.DEBUG):
+            logger.debug(f"Copied {copied_size} bytes from {src} to {dst}")
 
     def __copy(self, files_to_copy: dict) -> None:
         """
@@ -132,7 +177,8 @@ class SyncStrategyLocal(SyncStrategy):
                 destination_path.parent.mkdir(parents=True, exist_ok=True)
 
                 # Copy the file
-                shutil.copy2(source_path, destination_path)
+                # shutil.copy2(source_path, destination_path)
+                self.__copy_file(source_path, destination_path)
             except FileNotFoundError:
                 logger.error(f"File {source_path} not found in source")
                 continue
@@ -177,3 +223,28 @@ class SyncStrategyLocal(SyncStrategy):
                 continue
 
         logger.info("Temp file cleanup complete")
+    
+    def __remove_empty_folders(self, path: Path) -> None:
+        """
+        Helper method to remove empty folders.
+
+        Args:
+            path: Path - the path to the folder
+
+        Returns:
+            None
+        """
+        logger = fr_logger.get_logger()
+        logger.info(f"Removing empty folders in {path}")
+
+        for folder in path.iterdir():
+            if folder.is_dir():
+                self.__remove_empty_folders(folder)
+                try:
+                    folder.rmdir()  # This will only remove the subdirectory if it is empty
+                    logger.info(f"Folder {folder} deleted")
+                except OSError as e:
+                    if e.errno == 39:  # Directory not empty
+                        logger.debug(f"Folder {folder} is not empty")
+                    else:
+                        logger.error(f"Error deleting folder {folder}: {e}")
